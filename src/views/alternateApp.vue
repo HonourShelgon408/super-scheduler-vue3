@@ -21,7 +21,7 @@
 import M from "materialize-css";
 // import $ from "jquery";
 import "flatpickr/dist/flatpickr.css";
-import { db } from "./firebase/database";
+import { auth } from "./firebase/database";
 import { provide } from "vue";
 import { useRouter } from "vue-router";
 import { messaging } from "./firebase/database";
@@ -41,13 +41,14 @@ export default {
   name: "app",
   data: () => {
     return {
-      notificationMessage: {
-        type: Object,
-        default: () => ({ title: "def title", body: "def body" }),
-      },
-      hasNotification: {
-        type: Boolean,
-      },
+      // notificationMessage: {
+      //   type: Object,
+      //   default: () => ({ title: "def title", body: "def body" }),
+      // },
+      // hasNotification: {
+      //   type: Boolean,
+      //   default: () => false,
+      // },
     };
   },
   components: {
@@ -58,40 +59,27 @@ export default {
     "update-menu": updateMenu,
   },
   methods: {
-    timeoutNotification() {
+
+  },
+  mounted: function () {
+    let notificationMessage = {title: "", body: ""}
+    let hasNotification = false;
+
+    function closeNotification(e) {
+      hasNotification = false;
+      // console.log("close-banner", e);
+    }
+
+
+    function timeoutNotification() {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
-          this.hasNotification = false;
+          hasNotification = false;
           resolve();
         }, 6000);
       });
-    },
-    flipHasNotification() {
-      this.hasNotification = !this.hasNotification;
-    },
-    closeNotification(e) {
-      this.hasNotification = false;
-      // console.log("close-banner", e);
-    },
-  },
-  beforeMount: function () {
+    }
 
-    console.log("beforemount");
-    // //offline data
-    db.enablePersistence().then(function(){
-      console.log("persistence enabled");
-    }).catch(function (error) {
-      if (error.code == "failed-precondition") {
-        console.log("Persistence failed"); //multiple tabs would cause this error
-      } else if ((error.code = "unimplemented")) {
-        console.log("Persistence is not available"); //no browser support
-      } else {
-        console.log("Other peristence error", error.code, error);
-      }
-    });
-  },
-  mounted: function () {
-    this.hasNotification = false;
 
     let router = useRouter();
     M.AutoInit();
@@ -115,11 +103,11 @@ export default {
     //   element.style.height = "10px";
     //   element.style.height = element.scrollHeight + "px";
     // }
-    this.notificationMessage = { title: "default", body: "default2" };
 
-    messaging.onMessage((payload) => {
-      this.hasNotification = true;
-      console.warn("app.vue notification", payload.notification);
+    messaging.onMessage(function (payload) {
+      notificationMessage = { title: "default", body: "default2" };
+      hasNotification = true;
+      // console.warn("app.vue notification", payload.notification);
 
       // var notification = new Notification(title, body);
       // notification.onclick = () => {
@@ -127,10 +115,13 @@ export default {
       //   window.parent.focus();
       // };
 
-      this.notificationMessage.title = payload.notification.title;
-      this.notificationMessage.body = payload.notification.body;
+      console.log(notificationMessage);
+      console.log(payload.notification);
 
-      this.timeoutNotification()
+      notificationMessage.title = payload.notification.title;
+      notificationMessage.body = payload.notification.body;
+
+      timeoutNotification()
         .then(function () {
           console.log("notification closed");
         })
@@ -141,7 +132,7 @@ export default {
       );
       const noteReminder = note.getElementsByTagName("I")[1];
       noteReminder.innerHTML = "notifications_none";
-      // console.log(note, noteReminder);
+      console.log("app 129", note, noteReminder);
     });
   },
 };

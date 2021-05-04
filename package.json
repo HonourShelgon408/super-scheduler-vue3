@@ -3,14 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "publish": "vue-cli-service build & workbox generateSW workbox-config.js & firebase deploy",
+    "firebase": "firebase deploy",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "element-plus": "^1.0.2-beta.40",
+    "firebase": "^8.4.1",
+    "jquery": "^3.6.0",
+    "materialize-css": "^1.0.0",
     "register-service-worker": "^1.7.1",
-    "vue": "^3.0.0"
+    "vue": "^3.0.0",
+    "vue-flatpickr-component": "^9.0.3",
+    "vue-router": "^4.0.6"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
