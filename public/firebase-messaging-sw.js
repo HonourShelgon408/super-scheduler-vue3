@@ -7,6 +7,9 @@ importScripts('https://www.gstatic.com/firebasejs/8.0.2/firebase-messaging.js');
 * change the one located in ./src/firebase/firebase-config-details.js */
 
 
+//** PUT API CONFIG HERE */
+
+
 firebase.initializeApp(firebase_global);
 
 try {
